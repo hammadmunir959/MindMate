@@ -294,44 +294,11 @@ def validate_session_ownership(session_state, patient_id: str, moderator=None) -
     
     # Check metadata for patient_id
     session_patient_id = None
-    metadata_dict = None
     if hasattr(session_state, 'metadata') and session_state.metadata:
-        raw_metadata = session_state.metadata
-        if isinstance(raw_metadata, dict):
-            metadata_dict = raw_metadata
-        else:
-            try:
-                # Try mapping conversion
-                metadata_dict = dict(raw_metadata)  # type: ignore[arg-type]
-            except Exception:
-                if hasattr(raw_metadata, "to_dict"):
-                    metadata_dict = raw_metadata.to_dict()  # type: ignore[call-arg]
-                elif hasattr(raw_metadata, "__dict__"):
-                    metadata_dict = {
-                        key: value
-                        for key, value in vars(raw_metadata).items()
-                        if not key.startswith("_")
-                    }
-                else:
-                    metadata_dict = {}
-                    logger.debug(
-                        "Session %s metadata is type %s; treating as empty",
-                        session_id,
-                        type(raw_metadata),
-                    )
-        if metadata_dict is None:
-            metadata_dict = {}
-        session_patient_id = metadata_dict.get("patient_id")
+        session_patient_id = session_state.metadata.get("patient_id")
         if session_patient_id:
             session_patient_id = str(session_patient_id)
             logger.debug(f"Session {session_id}: Found patient_id in metadata: {session_patient_id}")
-        # Ensure future access uses dictionary metadata
-        if metadata_dict is not raw_metadata:
-            try:
-                session_state.metadata = metadata_dict
-            except Exception:
-                # If metadata attribute is read-only, continue without assignment
-                pass
     
     # Check direct patient_id attribute
     if not session_patient_id and hasattr(session_state, 'patient_id'):
@@ -348,13 +315,10 @@ def validate_session_ownership(session_state, patient_id: str, moderator=None) -
                     session_patient_id = str(db_patient_id)
                     logger.debug(f"Session {session_id}: Found patient_id in database: {session_patient_id}")
                     # Update session state metadata for future use
-                    if metadata_dict is None:
-                        metadata_dict = {}
-                    metadata_dict["patient_id"] = session_patient_id
-                    try:
-                        session_state.metadata = metadata_dict
-                    except Exception:
-                        pass
+                    if hasattr(session_state, 'metadata'):
+                        if session_state.metadata is None:
+                            session_state.metadata = {}
+                        session_state.metadata["patient_id"] = session_patient_id
         except Exception as e:
             logger.debug(f"Could not get patient_id from database for session {session_id}: {e}")
     
