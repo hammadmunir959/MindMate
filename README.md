@@ -4,17 +4,17 @@
 
 ---
 
-## 🚀 Key Features
+## Key Features
 
-*   **🤖 AI Therapist Agent**: A compassionate conversational AI capable of conducting structured clinical interviews (SCID-5 aligned) to understand patient distress.
-*   **🧠 Real-time Symptom Recognition**: An integrated **Symptom Recognition Agent (SRA)** that analyzes conversations in real-time to extract clinical symptoms and risk factors.
-*   **🩺 Automated Diagnosis Support**: A **Diagnosis Agent** that uses decision trees and clinical guidelines to suggest differential diagnoses to human specialists.
-*   **📅 Smart Booking System**: Seamlessly matches patients with the right specialists based on their assessment profile and availability.
-*   **🛡️ Secure & Compliance-Ready**: Built with role-based access control (RBAC), JWT authentication, and encrypted data storage.
+*   **AI Therapist Agent**: A compassionate conversational AI capable of conducting structured clinical interviews (SCID-5 aligned) to understand patient distress.
+*   **Real-time Symptom Recognition**: An integrated **Symptom Recognition Agent (SRA)** that analyzes conversations in real-time to extract clinical symptoms and risk factors.
+*   **Automated Diagnosis Support**: A **Diagnosis Agent** that uses decision trees and clinical guidelines to suggest differential diagnoses to human specialists.
+*   **Smart Booking System**: Seamlessly matches patients with the right specialists based on their assessment profile and availability.
+*   **Secure & Compliance-Ready**: Built with role-based access control (RBAC), JWT authentication, and encrypted data storage.
 
 ---
 
-## 🏗️ System Architecture
+## System Architecture
 
 MindMate V2 is built on a modern, microservices-inspired architecture:
 
@@ -36,7 +36,7 @@ A sleek, responsive user interface built with:
 
 ---
 
-## 🤖 Core Agentic Systems
+## Core Agentic Systems
 
 MindMate's "brain" consists of four specialized agents working in harmony:
 
@@ -58,7 +58,7 @@ MindMate's "brain" consists of four specialized agents working in harmony:
 
 ---
 
-## 🔄 Workflows
+## Workflows
 
 ### **1. The Assessment Flow**
 1.  **Start**: Patient initiates a chat session.
@@ -75,7 +75,7 @@ MindMate's "brain" consists of four specialized agents working in harmony:
 
 ---
 
-## 🛠️ Setup & Installation
+## Setup & Installation
 
 ### Prerequisites
 *   Docker & Docker Compose
@@ -105,7 +105,7 @@ The application will be available at:
 
 ---
 
-## 🧪 Testing
+## Testing
 
 We employ a comprehensive testing strategy:
 *   **Unit Tests**: `pytest` for backend logic.
@@ -114,5 +114,5 @@ We employ a comprehensive testing strategy:
 
 ---
 
-## 📄 License
+## License
 Private Project - CodeKonix AI Labs.
