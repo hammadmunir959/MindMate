@@ -38,23 +38,38 @@ A sleek, responsive user interface built with:
 
 ## Core Agentic Systems
 
-MindMate's "brain" consists of four specialized agents working in harmony:
+MindMate's "brain" is a sophisticated multi-agent system orchestrated by LangGraph, designed to mimic the clinical reasoning of a human practitioner.
 
-### 1. Orchestrator Agent
-*   **Role**: The conductor of the system.
-*   **Function**: Routes user messages to the appropriate sub-agent, manages session phases (Rapport -> Assessment -> Safety Check -> Conclusion), and maintains global context.
+### 1. Orchestrator (The Conductor)
+*   **Role**: Central nervous system managing the conversation lifecycle.
+*   **Logic**:
+    *   **Parallel Execution**: Routes user messages to the **Therapist** (Sync) and **SRA** (Async) simultaneously to ensure sub-second latency.
+    *   **State Management**: Maintains the global "Session State" (Phase, Risk Level, Symptom Store) in Redis.
+    *   **Dynamic Routing**: Triggers the **Diagnosis Agent** only when sufficient diagnostic data has been gathered.
 
-### 2. Therapist Agent
-*   **Role**: The front-facing conversationalist.
-*   **Function**: Engages the user in natural dialogue. It uses **Semantic Router** to detect intent and **SCID-5** banks to ask clinically relevant questions without sounding robotic.
+### 2. Therapist Agent V2 (The Interface)
+*   **Role**: Conducting the clinical interview with empathy and precision.
+*   **Key Capabilities**:
+    *   **SCID-5 Guided**: Uses a "Constraint-Based" approach to inject mandatory clinical questions (from the SCID-5 module) naturally into the conversation.
+    *   **Deterministic Safety**: Priority override mechanism that scans for self-harm keywords (`risk_level: HIGH/CRITICAL`) before any LLM generation to ensure immediate, safe responses.
+    *   **Phase Awareness**: Transitions the session through 4 distinct phases: *Rapport* → *Exploration* → *Deepening* → *Closing*.
+*   **Tools**:
+    *   `get_guided_question`: Fetches the next clinically required question.
+    *   `detect_risk`: Heuristic analysis for crisis detection.
 
 ### 3. SRA (Symptom Recognition Agent)
-*   **Role**: The analytical observer.
-*   **Function**: Runs in the background, analyzing user inputs to extract entities like "Insomnia", "Anxiety", or "Suicidal Ideation". It maps these to standardized clinical codes.
+*   **Role**: The silent observer running in the background.
+*   **Logic**:
+    *   **Async Extraction**: Processes every user message locally to extract clinical entities (e.g., "Insomnia", "Anhedonia").
+    *   **Standardization**: Maps raw text to standardized DSM-5 symptom codes and severity scores (0.0 - 1.0).
+    *   **Database Sync**: Continuously updates the `symptoms` table in PostgreSQL without blocking the chat.
 
-### 4. Diagnosis Agent
-*   **Role**: The clinical synthesizer.
-*   **Function**: Aggregates extracted symptoms and runs them through clinical decision trees (implemented as MCP Tools) to generate a preliminary clinical report and differential diagnoses.
+### 4. Diagnosis Agent V2 (The Clinician)
+*   **Role**: Generating differential diagnoses based on accumulated evidence.
+*   **Algorithm**: Implements a 3-Step Decision Tree:
+    1.  **Screening**: `screen_disorder_categories` aggregates symptoms to identify top potential categories (e.g., Depressive vs. Anxiety).
+    2.  **Evaluation**: `evaluate_disorder_criteria` scores specific disorders (e.g., MDD, GAD) against DSM-5 criteria, checking for Core vs. Supporting symptoms.
+    3.  **Reporting**: `generate_clinical_report` synthesizes findings into a professional clinical note for the specialist.
 
 ---
 
@@ -114,5 +129,3 @@ We employ a comprehensive testing strategy:
 
 ---
 
-## License
-Private Project - CodeKonix AI Labs.
