@@ -1,110 +1,112 @@
-import React from "react";
-import { motion } from "framer-motion";
-import { Heart, Facebook, Twitter, Instagram, Linkedin } from "react-feather";
+import { Link } from 'react-router-dom';
+import { Heart, Mail, GitHub, Linkedin } from 'react-feather';
 
-const Footer = ({ darkMode }) => {
-  const footerLinks = [
-    { name: "Privacy Policy", href: "#" },
-    { name: "Terms", href: "#" },
-    { name: "Contact", href: "#" },
-  ];
+const Footer = () => {
+    const currentYear = new Date().getFullYear();
 
-  const socialLinks = [
-    { name: "Facebook", icon: Facebook, href: "#" },
-    { name: "Twitter", icon: Twitter, href: "#" },
-    { name: "Instagram", icon: Instagram, href: "#" },
-    { name: "LinkedIn", icon: Linkedin, href: "#" },
-  ];
+    return (
+        <footer style={{
+            background: 'var(--bg-secondary)',
+            borderTop: '1px solid var(--bg-tertiary)',
+            padding: 'var(--space-2xl) 0',
+            marginTop: 'auto',
+        }}>
+            <div className="container">
+                <div style={{
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+                    gap: 'var(--space-xl)',
+                    marginBottom: 'var(--space-xl)',
+                }}>
+                    {/* Brand */}
+                    <div>
+                        <h3 style={{
+                            background: 'var(--accent-gradient)',
+                            WebkitBackgroundClip: 'text',
+                            WebkitTextFillColor: 'transparent',
+                            marginBottom: 'var(--space-md)',
+                        }}>
+                            MindMate
+                        </h3>
+                        <p style={{ fontSize: '0.875rem', color: 'var(--text-muted)' }}>
+                            Your AI-powered mental health companion. Get support anytime, anywhere.
+                        </p>
+                    </div>
 
-  return (
-    <footer
-      className={`transition-all duration-300 ${
-        darkMode
-          ? "bg-gray-900/95 backdrop-blur-md border-t border-gray-800"
-          : "bg-white/95 backdrop-blur-md border-t border-gray-200"
-      }`}
-    >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
-          {/* Logo */}
-          <motion.div
-            className="flex items-center space-x-3"
-            whileHover={{ scale: 1.05 }}
-            transition={{ duration: 0.2 }}
-          >
-            <div
-              className={`w-8 h-8 rounded-lg flex items-center justify-center ${
-                darkMode ? "bg-indigo-600" : "bg-indigo-500"
-              }`}
-            >
-              <Heart size={20} className="text-white" />
+                    {/* Quick Links */}
+                    <div>
+                        <h4 style={{ fontSize: '0.875rem', marginBottom: 'var(--space-md)', color: 'var(--text-primary)' }}>
+                            Quick Links
+                        </h4>
+                        <nav style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-sm)' }}>
+                            <Link to="/assessment" style={{ fontSize: '0.875rem', color: 'var(--text-muted)' }}>Assessment</Link>
+                            <Link to="/booking" style={{ fontSize: '0.875rem', color: 'var(--text-muted)' }}>Book a Session</Link>
+                            <Link to="/dashboard" style={{ fontSize: '0.875rem', color: 'var(--text-muted)' }}>Dashboard</Link>
+                        </nav>
+                    </div>
+
+                    {/* Resources */}
+                    <div>
+                        <h4 style={{ fontSize: '0.875rem', marginBottom: 'var(--space-md)', color: 'var(--text-primary)' }}>
+                            Resources
+                        </h4>
+                        <nav style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-sm)' }}>
+                            <a href="#" style={{ fontSize: '0.875rem', color: 'var(--text-muted)' }}>Privacy Policy</a>
+                            <a href="#" style={{ fontSize: '0.875rem', color: 'var(--text-muted)' }}>Terms of Service</a>
+                            <a href="#" style={{ fontSize: '0.875rem', color: 'var(--text-muted)' }}>FAQ</a>
+                        </nav>
+                    </div>
+
+                    {/* Contact */}
+                    <div>
+                        <h4 style={{ fontSize: '0.875rem', marginBottom: 'var(--space-md)', color: 'var(--text-primary)' }}>
+                            Contact
+                        </h4>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-sm)' }}>
+                            <a href="mailto:support@mindmate.ai" style={{
+                                fontSize: '0.875rem',
+                                color: 'var(--text-muted)',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: 'var(--space-sm)',
+                            }}>
+                                <Mail size={14} />
+                                support@mindmate.ai
+                            </a>
+                        </div>
+                        <div style={{ display: 'flex', gap: 'var(--space-md)', marginTop: 'var(--space-md)' }}>
+                            <a href="#" style={{ color: 'var(--text-muted)' }}><GitHub size={18} /></a>
+                            <a href="#" style={{ color: 'var(--text-muted)' }}><Linkedin size={18} /></a>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Bottom Bar */}
+                <div style={{
+                    borderTop: '1px solid var(--bg-tertiary)',
+                    paddingTop: 'var(--space-lg)',
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    flexWrap: 'wrap',
+                    gap: 'var(--space-md)',
+                }}>
+                    <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                        © {currentYear} MindMate. All rights reserved.
+                    </p>
+                    <p style={{
+                        fontSize: '0.75rem',
+                        color: 'var(--text-muted)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 'var(--space-xs)',
+                    }}>
+                        Made with <Heart size={12} style={{ color: 'var(--danger)' }} /> for mental wellness
+                    </p>
+                </div>
             </div>
-            <span
-              className={`text-xl font-bold ${
-                darkMode ? "text-white" : "text-gray-900"
-              }`}
-            >
-              MindMate
-            </span>
-          </motion.div>
-
-          {/* Footer Links */}
-          <nav className="hidden md:flex items-center space-x-1">
-            {footerLinks.map((link, index) => (
-              <motion.a
-                key={index}
-                href={link.href}
-                className={`text-sm px-4 py-2 rounded-lg transition-all duration-200 ${
-                  darkMode
-                    ? "text-gray-300 hover:text-white hover:bg-gray-800"
-                    : "text-gray-600 hover:text-gray-900 hover:bg-gray-100"
-                }`}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                {link.name}
-              </motion.a>
-            ))}
-          </nav>
-
-          {/* Right Side - Copyright & Social */}
-          <div className="flex items-center space-x-4">
-            {/* Copyright */}
-            <div
-              className={`hidden lg:block text-sm ${
-                darkMode ? "text-gray-400" : "text-gray-600"
-              }`}
-            >
-              © 2024 MindMate
-            </div>
-
-            {/* Social Links */}
-            <div className="flex items-center space-x-2">
-              {socialLinks.map((social, index) => {
-                const Icon = social.icon;
-                return (
-                  <motion.a
-                    key={index}
-                    href={social.href}
-                    className={`p-2 rounded-lg transition-all duration-200 ${
-                      darkMode
-                        ? "text-gray-300 hover:text-white hover:bg-gray-800"
-                        : "text-gray-600 hover:text-gray-900 hover:bg-gray-100"
-                    }`}
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.9 }}
-                    aria-label={social.name}
-                  >
-                    <Icon size={18} />
-                  </motion.a>
-                );
-              })}
-            </div>
-          </div>
-        </div>
-      </div>
-    </footer>
-  );
+        </footer>
+    );
 };
 
 export default Footer;

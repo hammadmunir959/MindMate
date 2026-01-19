@@ -65,7 +65,12 @@ from app.api.v1.router import router as api_router, load_all_routers
 logger.info("📦 Loading API routers...")
 try:
     load_all_routers()
-    app.include_router(api_router, prefix="/api")
+    app.include_router(api_router, prefix="/api/v1")
+    
+    # Include V2 Assessment Routes
+    from app.api.routes.assessment_v2 import router as assessment_v2_router
+    app.include_router(assessment_v2_router, prefix="/api")
+    
     logger.info("✅ API routers loaded")
     
     # Verify assessment router is loaded

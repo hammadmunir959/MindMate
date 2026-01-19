@@ -37,7 +37,7 @@ class Settings(BaseSettings):
     # Database Settings
     DB_HOST: str = "localhost"
     DB_PORT: int = 5432
-    DB_NAME: str = "mindmatedb"
+    DB_NAME: str = "mindmate_v2"
     DB_USER: str
     DB_PASSWORD: str
     DB_MAX_CONNECTIONS: int = 20

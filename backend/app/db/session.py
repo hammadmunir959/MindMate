@@ -29,8 +29,8 @@ engine = create_engine(
 # Create session factory
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
-# Import the declarative base from models (which has all models registered)
-from app.models import Base
+# Import the declarative base from models_new (new schema)
+from app.models_new import Base
 
 # Create Redis client (singleton)
 redis_client = redis.Redis(

@@ -1,218 +1,72 @@
-// src/App.jsx
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { Toaster } from 'react-hot-toast';
+import './index.css';
 
-// Marketing components
-import { LandingPage, DevTeam } from "./components/marketing";
+// Pages
+import Landing from './pages/Landing';
+import Login from './pages/Login';
+import Signup from './pages/Signup';
+import Assessment from './pages/Assessment';
+import Booking from './pages/Booking';
+import Dashboard from './pages/Dashboard';
 
-// Auth components
-import { Login, Signup, OTP, ForgotPassword, PasswordReset, OAuthSuccess } from "./components/auth";
+// Auth Store
+import { useAuthStore } from './stores/authStore';
 
-// Layout components
-import { Footer } from "./components/layout";
+// Protected Route Component
+const ProtectedRoute = ({ children }) => {
+  const { isAuthenticated } = useAuthStore();
 
-// Assessment components (commented out - no longer used)
-// import { MandatoryQuestionnaire } from "./components/assessment";
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
 
-// Specialist components
-import {
-  CompleteProfile,
-  ApplicationStatus,
-  PendingApproval,
-  ApplicationRejected,
-  ForumPage
-} from "./components/specialist";
-
-// Import new modular dashboard
-import SpecialistDashboardContainer from "./components/specialist/dashboard";
-
-// Admin components
-import { AdminDashboard, SpecialistApplicationPage } from "./components/admin";
-
-// Common components
-import ProtectedRoute from "./components/common/ProtectedRoute";
-import ErrorBoundary from "./components/common/ErrorBoundary";
-
-// Feature components
-import MainLayout from "./components/Home/MainLayout";
-import SpecialistProfile from "./components/Appointments/SpecialistProfile";
-import SpecialistProfilePage from "./components/Appointments/SpecialistProfilePage";
-import PatientAppointmentsHub from "./components/Appointments/PatientAppointmentsHub";
-import AppointmentsPage from "./components/Appointments/AppointmentsPage";
-import AssessmentPage from "./components/Assessment/AssessmentPage";
-import { Toaster } from "react-hot-toast";
-import { ToastProvider } from "./components/UI/Toast";
-import { useEffect } from "react";
+  return children;
+};
 
 function App() {
-  // Global error handler to suppress browser extension errors
-  useEffect(() => {
-    const originalConsoleError = console.error;
-    const originalConsoleWarn = console.warn;
-    
-    console.error = (...args) => {
-      const message = args.join(' ');
-      // Filter out common browser extension errors
-      if (message.includes('Grammarly') || 
-          message.includes('grm ERROR') || 
-          message.includes('iterable') ||
-          message.includes('moz-extension://') ||
-          message.includes('chrome-extension://') ||
-          message.includes('Not supported: in app messages')) {
-        return; // Suppress these errors
-      }
-      originalConsoleError.apply(console, args);
-    };
-
-    console.warn = (...args) => {
-      const message = args.join(' ');
-      // Filter out common browser extension warnings
-      if (message.includes('Grammarly') || 
-          message.includes('grm ERROR') || 
-          message.includes('iterable') ||
-          message.includes('moz-extension://') ||
-          message.includes('chrome-extension://')) {
-        return; // Suppress these warnings
-      }
-      originalConsoleWarn.apply(console, args);
-    };
-
-    return () => {
-      console.error = originalConsoleError;
-      console.warn = originalConsoleWarn;
-    };
-  }, []);
   return (
-    <ToastProvider>
-      <ErrorBoundary>
-        <Router>
-          <Toaster position="bottom-center" />
-          <Routes>
-        <Route path="/" element={<LandingPage />} />
-        <Route path="/dashboard/*" element={<MainLayout />} />
-        <Route path="/home/*" element={<MainLayout />} /> {/* Legacy route for backward compatibility */}
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
-        <Route path="/register" element={<Signup />} />
-        <Route path="/otp" element={<OTP />} />
-        <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="/reset-password" element={<PasswordReset />} />
-        <Route path="/dev-team" element={<DevTeam />} />
-        <Route path="/oauth-success" element={<OAuthSuccess />} />
-        {/* Admin Routes */}
-        <Route path="/admin" element={
-          <ProtectedRoute allowedUserTypes={['admin']}>
-            <ErrorBoundary>
-              <AdminDashboard />
-            </ErrorBoundary>
-          </ProtectedRoute>
-        } />
+    <>
+      <Toaster
+        position="bottom-center"
+        toastOptions={{
+          style: {
+            background: 'var(--bg-secondary)',
+            color: 'var(--text-primary)',
+            border: '1px solid var(--bg-tertiary)',
+          },
+        }}
+      />
+      <Router>
+        <Routes>
+          {/* Public Routes */}
+          <Route path="/" element={<Landing />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
 
-        {/* Specialist Routes - Protected */}
-        <Route path="/specialist-dashboard" element={
-          <ProtectedRoute allowedUserTypes={['specialist']}>
-            <ErrorBoundary>
-              <SpecialistDashboardContainer />
-            </ErrorBoundary>
-          </ProtectedRoute>
-        } />
-        <Route path="/specialist" element={
-          <ProtectedRoute allowedUserTypes={['specialist']}>
-            <ErrorBoundary>
-              <SpecialistDashboardContainer />
-            </ErrorBoundary>
-          </ProtectedRoute>
-        } /> {/* Legacy route */}
-        <Route path="/specialist/dashboard" element={
-          <ProtectedRoute allowedUserTypes={['specialist']}>
-            <ErrorBoundary>
-              <SpecialistDashboardContainer />
-            </ErrorBoundary>
-          </ProtectedRoute>
-        } />
+          {/* Protected Routes */}
+          <Route path="/dashboard" element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          } />
+          <Route path="/assessment" element={
+            <ProtectedRoute>
+              <Assessment />
+            </ProtectedRoute>
+          } />
+          <Route path="/booking" element={
+            <ProtectedRoute>
+              <Booking />
+            </ProtectedRoute>
+          } />
 
-        {/* Specialist Profile Routes */}
-        <Route path="/specialist/complete-profile" element={
-          <ProtectedRoute allowedUserTypes={['specialist']}>
-            <CompleteProfile />
-          </ProtectedRoute>
-        } />
-        <Route path="/specialist/application-status" element={
-          <ProtectedRoute allowedUserTypes={['specialist']}>
-            <ApplicationStatus />
-          </ProtectedRoute>
-        } />
-        <Route path="/specialist/application-rejected" element={
-          <ProtectedRoute allowedUserTypes={['specialist']}>
-            <ApplicationRejected />
-          </ProtectedRoute>
-        } />
-        <Route path="/specialists/forum" element={
-          <ProtectedRoute allowedUserTypes={['specialist']}>
-            <ForumPage />
-          </ProtectedRoute>
-        } />
-
-        {/* Legacy routes for backward compatibility */}
-        <Route path="/complete-profile" element={
-          <ProtectedRoute allowedUserTypes={['specialist']}>
-            <CompleteProfile />
-          </ProtectedRoute>
-        } />
-        <Route path="/specialist-complete-profile" element={
-          <ProtectedRoute allowedUserTypes={['specialist']}>
-            <CompleteProfile />
-          </ProtectedRoute>
-        } />
-        <Route path="/pending-approval" element={
-          <ProtectedRoute allowedUserTypes={['specialist']}>
-            <ApplicationStatus />
-          </ProtectedRoute>
-        } />
-        <Route path="/application-rejected" element={
-          <ProtectedRoute allowedUserTypes={['specialist']}>
-            <ApplicationRejected />
-          </ProtectedRoute>
-        } />
-        
-        {/* Specialist Profile Routes */}
-        <Route path="/specialist/:id" element={<SpecialistProfile />} />
-        <Route path="/specialists/profile/:id" element={<SpecialistProfilePage />} />
-        
-        {/* Patient Appointments Page - Protected (Direct Page in Header) */}
-        <Route path="/appointments" element={
-          <ProtectedRoute allowedUserTypes={['patient']}>
-            <AppointmentsPage />
-          </ProtectedRoute>
-        } />
-        
-        {/* Patient Assessment Page - Protected */}
-        <Route path="/assessment" element={
-          <ProtectedRoute allowedUserTypes={['patient']}>
-            <ErrorBoundary>
-              <AssessmentPage />
-            </ErrorBoundary>
-          </ProtectedRoute>
-        } />
-        <Route path="/assessment/*" element={
-          <ProtectedRoute allowedUserTypes={['patient']}>
-            <ErrorBoundary>
-              <AssessmentPage />
-            </ErrorBoundary>
-          </ProtectedRoute>
-        } />
-        
-        {/* Admin Application Review Routes */}
-        <Route path="/admin/specialists/application/:id" element={
-          <ProtectedRoute allowedUserTypes={['admin']}>
-            <SpecialistApplicationPage />
-          </ProtectedRoute>
-        } />
-          </Routes>
-        </Router>
-      </ErrorBoundary>
-      </ToastProvider>
+          {/* Fallback */}
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </Router>
+    </>
   );
 }
 
 export default App;
-

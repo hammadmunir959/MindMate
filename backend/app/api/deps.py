@@ -2,9 +2,10 @@
 
 """
 Shared dependencies for API endpoints.
+Uses new repository layer and unified User model.
 """
 
-from typing import Generator
+from typing import Generator, Union
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
@@ -12,30 +13,33 @@ from jose import jwt, JWTError
 
 from app.core.config import settings
 from app.db.session import get_db
-from app.models.patient import Patient, PatientAuthInfo
-from app.models.specialist import Specialists, SpecialistsAuthInfo
-from app.models.admin import Admin
+
+# New Models & Repositories
+from app.models_new import User, Patient, Specialist, Admin, UserType
+from app.db.repositories_new import (
+    user_repo, 
+    patient_repo, 
+    specialist_repo
+)
 
 # OAuth2 scheme for token authentication
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/login")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login")
 
 
 def get_current_user(
     token: str = Depends(oauth2_scheme),
     db: Session = Depends(get_db)
-):
+) -> User:
     """
     Get current authenticated user from JWT token.
+    Resolves to a unified User object.
     
     Args:
-        token: JWT token from request
+        token: JWT token
         db: Database session
         
     Returns:
-        User object (Patient, Specialist, or Admin)
-        
-    Raises:
-        HTTPException: If authentication fails
+        User object
     """
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
@@ -44,94 +48,89 @@ def get_current_user(
     )
     
     try:
-        payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.JWT_ALGORITHM])
+        payload = jwt.decode(
+            token, 
+            settings.SECRET_KEY, 
+            algorithms=[settings.JWT_ALGORITHM]
+        )
         user_id: str = payload.get("sub")
-        user_type: str = payload.get("type")
         
-        if user_id is None or user_type is None:
+        if user_id is None:
             raise credentials_exception
             
     except JWTError:
         raise credentials_exception
     
-    # Query appropriate table based on user type
-    if user_type == "patient":
-        user = db.query(Patient).filter(Patient.id == user_id).first()
-    elif user_type == "specialist":
-        user = db.query(Specialists).filter(Specialists.id == user_id).first()
-    elif user_type == "admin":
-        user = db.query(Admin).filter(Admin.id == user_id).first()
-    else:
-        raise credentials_exception
+    # Use repository to fetch user
+    user = user_repo.get(db, id=user_id)
     
     if user is None:
         raise credentials_exception
+        
+    if not user.is_active:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, 
+            detail="Inactive user"
+        )
         
     return user
 
 
 def get_current_patient(
-    current_user = Depends(get_current_user)
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
 ) -> Patient:
     """
-    Get current authenticated patient.
-    
-    Args:
-        current_user: Current authenticated user
-        
-    Returns:
-        Patient object
-        
-    Raises:
-        HTTPException: If user is not a patient
+    Get current authenticated patient profile.
     """
-    if not isinstance(current_user, Patient):
+    if current_user.user_type != UserType.PATIENT:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Not authorized as patient"
         )
-    return current_user
+    
+    patient = patient_repo.get_by_user_id(db, user_id=current_user.id)
+    if not patient:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Patient profile not found"
+        )
+        
+    return patient
 
 
 def get_current_specialist(
-    current_user = Depends(get_current_user)
-) -> Specialists:
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+) -> Specialist:
     """
-    Get current authenticated specialist.
-    
-    Args:
-        current_user: Current authenticated user
-        
-    Returns:
-        Specialist object
-        
-    Raises:
-        HTTPException: If user is not a specialist
+    Get current authenticated specialist profile.
     """
-    if not isinstance(current_user, Specialists):
+    if current_user.user_type != UserType.SPECIALIST:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Not authorized as specialist"
         )
-    return current_user
+        
+    specialist = specialist_repo.get_by_user_id(db, user_id=current_user.id)
+    if not specialist:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Specialist profile not found"
+        )
+        
+    return specialist
 
 
 def get_current_admin(
-    current_user = Depends(get_current_user)
-) -> Admin:
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+) -> User:
     """
     Get current authenticated admin.
-    
-    Args:
-        current_user: Current authenticated user
-        
-    Returns:
-        Admin object
-        
-    Raises:
-        HTTPException: If user is not an admin
+    Returns the User object (as Admin profile is separate but User has permissions)
     """
-    if not isinstance(current_user, Admin):
+    if current_user.user_type != UserType.ADMIN:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Not authorized as admin"
@@ -147,4 +146,3 @@ __all__ = [
     "get_current_admin",
     "oauth2_scheme",
 ]
-
