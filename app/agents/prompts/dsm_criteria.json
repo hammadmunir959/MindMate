@@ -1,0 +1,69 @@
+{
+    "modules": {
+        "ONBOARDING": {
+            "definition": "The introductory conversational phase. Welcomes the patient, collects their chief complaints, and builds rapport before clinical profiling begins.",
+            "switch_away_criteria": "Switch to SCID_SC dynamically after 2-3 turns once the primary issues/complaints have been sufficiently stated."
+        },
+        "SCID_SC": {
+            "definition": "The central screening phase. Acts as the routing hub to establish an initial clinical picture across all major symptom domains.",
+            "switch_away_criteria": "Switch to a specific disorder module when the patient endorses enough symptom severity or duration in that domain to warrant deeper investigation."
+        },
+        "MDD": {
+            "definition": "Major Depressive Disorder. Profound, persistent depressed mood or loss of pleasure.",
+            "switch_to_criteria": "Patient reports persistent low mood, worthlessness, OR anhedonia occurring nearly every day for at least 2 weeks. No active mania signs."
+        },
+        "BIPOLAR": {
+            "definition": "Bipolar Disorder. Episodes of significant mood elevation, impulsivity, and increased energy.",
+            "switch_to_criteria": "Patient mentions elevated or expansive mood, grandiosity, risky behaviors, or decreased need for sleep combined with unusually high energy."
+        },
+        "GAD": {
+            "definition": "Generalized Anxiety Disorder. Chronic, diffuse, uncontrollable worry.",
+            "switch_to_criteria": "Patient describes excessive, difficult-to-control worry across 2 or more life domains (work, health, family) lasting for most days over at least 6 months."
+        },
+        "PTSD": {
+            "definition": "Post-Traumatic Stress Disorder. Psychological reaction to a severe traumatic event.",
+            "switch_to_criteria": "Patient references exposure to a traumatic event and reports prominent intrusions (flashbacks/nightmares), avoidance behaviors, or severe hypervigilance."
+        },
+        "PANIC": {
+            "definition": "Panic Disorder. Sudden, intense, unexpected episodes of fear accompanied by physical symptoms.",
+            "switch_to_criteria": "Patient reports sudden, overwhelming fear episodes accompanied by at least 4 physical symptoms (palpitations, sweating, trembling, shortness of breath, dizziness)."
+        },
+        "SOCIAL_ANXIETY": {
+            "definition": "Social Anxiety Disorder. Intense fear of judgment or humiliation in social/performance situations.",
+            "switch_to_criteria": "Patient describes marked, disproportionate fear of social interactions where they may be observed or judged by others, leading to significant avoidance."
+        },
+        "OCD": {
+            "definition": "Obsessive Compulsive Disorder. Presence of intrusive thoughts and repetitive behavioral rituals.",
+            "switch_to_criteria": "Patient describes distressing, intrusive repetitive thoughts (obsessions) AND/OR the need to perform rigid rituals or mental acts (compulsions) to relieve anxiety."
+        },
+        "ADHD": {
+            "definition": "Attention-Deficit/Hyperactivity Disorder. Persistent pattern of pervasive inattention or hyperactivity-impulsivity.",
+            "switch_to_criteria": "Patient describes lifelong (childhood-onset) patterns of severe inattention, distractibility, or hyperactivity that significantly impair functioning in 2 or more settings (e.g., home and work)."
+        },
+        "SUBSTANCE_USE": {
+            "definition": "Substance Use Disorder. Problematic pattern of alcohol or drug use leading to significant impairment.",
+            "switch_to_criteria": "Patient endorses problematic, recurrent use of alcohol or drugs that affects their health, work, or relationships, or reports inability to control use."
+        },
+        "EATING": {
+            "definition": "Eating Disorders (Anorexia/Bulimia/Binge). Severe disturbances in eating behaviors and body image.",
+            "switch_to_criteria": "Patient describes heavily distorted eating behaviors, severe body image distress, extreme caloric restriction, binge eating, or purging behaviors."
+        },
+        "RISK": {
+            "definition": "Risk Assessment. Evaluation of imminent danger to self or others.",
+            "switch_to_criteria": "IMMEDIATE PRIORITY — ANY mention, direct or indirect, of self-harm, suicidal ideation, suicide plan, or intent. Overrides all other module priorities."
+        },
+        "COMPLETE": {
+            "definition": "Diagnostic interview is clinically complete.",
+            "switch_to_criteria": "All clinically indicated modules have been thoroughly explored. No new symptom themes have emerged in the last 3 turns, and sufficient evidence is collected."
+        }
+    },
+    "escalation_rules": {
+        "critical": "Active suicidal ideation WITH a specific plan or intent.",
+        "high": "Passive suicidal ideation (wishing to be dead) OR history of past suicide attempts without current active plan.",
+        "medium": "General hopelessness, feeling like a burden to others, or significant unmanaged risk factors."
+    },
+    "operational_directives": {
+        "monitoring": "You must continuously monitor the conversation. If new clinical evidence emerges, you are free to dynamically switch to a different module.",
+        "stay_in_module": "Set stay_in_module=true if the current active module needs further exploration because the evidence collected so far is insufficient."
+    }
+}
